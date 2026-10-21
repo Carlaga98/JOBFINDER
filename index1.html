@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobFinder - Trova il tuo prossimo lavoro</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      color: #20243a;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 20px 7%;
+      border-bottom: 1px solid #e6e8ef;
+    }
+
+    header h2 { margin: 0; color: #5146e5; }
+
+    .hero {
+      padding: 48px 7% 32px;
+      background: #eeedff;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      margin: 0 0 12px;
+    }
+
+    .hero p { color: #555b70; }
+
+    .search {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 9px;
+      border: 1px solid #d9dce8;
+      background: white;
+      font-size: 15px;
+    }
+
+    button {
+      cursor: pointer;
+      background: #5146e5;
+      color: white;
+      border: none;
+      font-weight: bold;
+    }
+
+    button:hover { background: #3f35c7; }
+
+    .reset {
+      background: #e4e5ef;
+      color: #292d42;
+    }
+
+    .reset:hover { background: #d5d7e4; }
+
+    main { padding: 28px 7%; }
+
+    .results-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    #results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .job {
+      background: white;
+      border: 1px solid #e5e6ee;
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .job h3 { margin: 0 0 10px; }
+    .company { color: #62677a; margin-bottom: 16px; }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 9px;
+      margin: 0 5px 8px 0;
+      background: #eeedff;
+      color: #4438cc;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .job p { color: #555b70; font-size: 14px; }
+    .job button { margin-top: 10px; }
+
+    .note {
+      font-size: 12px;
+      color: #777b8b;
+      line-height: 1.5;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 500px) {
+      .hero { padding-top: 32px; }
+      main { padding-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>JobFinder</h2>
+</header>
+
+<section class="hero">
+  <h1>Il lavoro giusto, senza perdere ore.</h1>
+  <p>Cerca opportunità per iniziare la tua carriera.</p>
+
+  <div class="search">
+    <input id="role" placeholder="Ruolo: es. Marketing">
+    <input id="city" placeholder="Città: es. Bologna">
+
+    <select id="contract">
+      <option value="">Tutti i contratti</option>
+      <option value="Stage">Stage</option>
+      <option value="Junior">Junior</option>
+      <option value="Apprendistato">Apprendistato</option>
+      <option value="Tempo indeterminato">Tempo indeterminato</option>
+    </select>
+
+    <select id="mode">
+      <option value="">Tutte le modalità</option>
+      <option value="Remoto">Remoto</option>
+      <option value="Ibrido">Ibrido</option>
+      <option value="In presenza">In presenza</option>
+    </select>
+
+    <button onclick="searchJobs()">Cerca lavoro</button>
+    <button class="reset" onclick="resetSearch()">Azzera filtri</button>
+  </div>
+</section>
+
+<main>
+  <div class="results-top">
+    <h2>Opportunità per te</h2>
+    <span id="count"></span>
+  </div>
+
+  <div id="results"></div>
+
+  <p class="note">
+    Questa è una demo con annunci inventati per testare il funzionamento.
+    Non sono offerte reali e i pulsanti non inviano candidature.
+  </p>
+</main>
+
+<script>
+  const jobs = [
+    {
+      title: "Marketing Assistant",
+      company: "Azienda demo A",
+      city: "Milano",
+      contract: "Stage",
+      mode: "In presenza",
+      field: "Marketing"
+    },
+    {
+      title: "Junior HR Specialist",
+      company: "Azienda demo B",
+      city: "Bologna",
+      contract: "Junior",
+      mode: "Ibrido",
+      field: "Risorse umane"
+    },
+    {
+      title: "Junior Financial Analyst",
+      company: "Azienda demo C",
+      city: "Milano",
+      contract: "Junior",
+      mode: "In presenza",
+      field: "Finance"
+    },
+    {
+      title: "Digital Marketing Intern",
+      company: "Azienda demo D",
+      city: "Remoto",
+      contract: "Stage",
+      mode: "Remoto",
+      field: "Marketing"
+    },
+    {
+      title: "Apprendista HR",
+      company: "Azienda demo E",
+      city: "Bologna",
+      contract: "Apprendistato",
+      mode: "Ibrido",
+      field: "Risorse umane"
+    },
+    {
+      title: "Junior Marketing Specialist",
+      company: "Azienda demo F",
+      city: "Bologna",
+      contract: "Tempo indeterminato",
+      mode: "Ibrido",
+      field: "Marketing"
+    },
+    {
+  title: "Marketing Intern",
+  company: "Azienda demo G",
+  city: "Bologna",
+  contract: "Stage",
+  mode: "Ibrido",
+  field: "Marketing"
+},
+  ];
+
+  function searchJobs() {
+    const role = document.getElementById("role").value
+      .trim().toLowerCase();
+    const city = document.getElementById("city").value
+      .trim().toLowerCase();
+    const contract = document.getElementById("contract").value;
+    const mode = document.getElementById("mode").value;
+
+    const filtered = jobs.filter(job => {
+      const text = (
+        job.title + " " + job.field + " " + job.company
+      ).toLowerCase();
+
+      const cityMatch =
+        !city || job.city.toLowerCase().includes(city);
+
+      const roleMatch = !role || text.includes(role);
+      const contractMatch = !contract || job.contract === contract;
+      const modeMatch = !mode || job.mode === mode;
+
+      return roleMatch && cityMatch &&
+        contractMatch && modeMatch;
+    });
+
+    showJobs(filtered);
+  }
+
+  function showJobs(list) {
+    const results = document.getElementById("results");
+    document.getElementById("count").textContent =
+      list.length + (list.length === 1
+        ? " annuncio trovato"
+        : " annunci trovati");
+
+    if (list.length === 0) {
+      results.innerHTML =
+        "<p>Nessun risultato nella demo. Prova a cambiare i filtri.</p>";
+      return;
+    }
+
+    results.innerHTML = list.map(job => `
+      <article class="job">
+        <h3>${job.title}</h3>
+        <div class="company">${job.company}</div>
+        <span class="tag">${job.contract}</span>
+        <span class="tag">${job.mode}</span>
+        <p>📍 ${job.city}</p>
+        <p>Area: ${job.field}</p>
+        <button onclick="alert('Annuncio dimostrativo: non è possibile candidarsi.')">
+          Scopri l'offerta
+        </button>
+      </article>
+    `).join("");
+  }
+
+  function resetSearch() {
+    document.getElementById("role").value = "";
+    document.getElementById("city").value = "";
+    document.getElementById("contract").value = "";
+    document.getElementById("mode").value = "";
+    showJobs(jobs);
+  }
+
+  showJobs(jobs);
+</script>
+
+</body>
+</html>

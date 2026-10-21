@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobFinder - Trova il tuo prossimo lavoro</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      color: #20243a;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 20px 7%;
+      border-bottom: 1px solid #e6e8ef;
+    }
+
+    header h2 { margin: 0; color: #5146e5; }
+
+    .hero {
+      padding: 48px 7% 32px;
+      background: #eeedff;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      margin: 0 0 12px;
+    }
+
+    .hero p { color: #555b70; }
+
+    .search {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 9px;
+      border: 1px solid #d9dce8;
+      background: white;
+      font-size: 15px;
+    }
+
+    button {
+      cursor: pointer;
+      background: #5146e5;
+      color: white;
+      border: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #3f35c7; }
+
+    .reset {
+      background: #e4e5ef;
+      color: #292d42;
+    }
+
+    .reset:hover { background: #d5d7e4; }
+
+    main { padding: 28px 7%; }
+
+    .results-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    #results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .job {
+      background: white;
+      border: 1px solid #e5e6ee;
+      border-radius: 14px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .job h3 { margin: 0 0 10px; font-size: 18px; color: #1e2235; }
+    .company { color: #5146e5; font-weight: bold; margin-bottom: 12px; }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 9px;
+      margin: 0 5px 8px 0;
+      background: #eeedff;
+      color: #4438cc;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .job p { color: #555b70; font-size: 14px; margin: 6px 0; }
+    .job-desc {
+      font-size: 13px;
+      color: #62677a;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 10px 0 16px !important;
+    }
+
+    .job a {
+      text-decoration: none;
+      display: block;
+    }
+
+    .loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+      color: #5146e5;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #777b8b;
+      line-height: 1.5;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 500px) {
+      .hero { padding-top: 32px; }
+      main { padding-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>JobFinder</h2>
+</header>
+
+<section class="hero">
+  <h1>Il lavoro giusto, senza perdere ore.</h1>
+  <p>Cerca opportunità reali da siti e agenzie in tutta Italia.</p>
+
+  <form class="search" onsubmit="event.preventDefault(); searchJobs();">
+    <input id="role" placeholder="Ruolo: es. Sviluppatore, Marketing...">
+    <input id="city" placeholder="Città: es. Roma, Milano, Bologna...">
+
+    <select id="contract">
+      <option value="">Tutti i contratti</option>
+      <option value="full_time">Tempo pieno / Indeterminato</option>
+      <option value="part_time">Part Time</option>
+      <option value="contract">Determinato / Stage</option>
+    </select>
+
+    <button type="submit">Cerca lavoro</button>
+    <button type="button" class="reset" onclick="resetSearch()">Azzera filtri</button>
+  </form>
+</section>
+
+<main>
+  <div class="results-top">
+    <h2>Offerte di lavoro trovate</h2>
+    <span id="count">Inserisci una ricerca per iniziare</span>
+  </div>
+
+  <div id="results"></div>
+
+  <p class="note">
+    JobFinder è un aggregatore di offerte di lavoro. Gli annunci mostrati provengono da API e fonti esterne ufficiali. Cliccando su "Candidati sul sito" verrai reindirizzato direttamente alla pagina originale dell'annuncio.
+  </p>
+</main>
+
+<script>
+  async function searchJobs() {
+  const container = document.getElementById('results');
+  if (!container) return;
+
+  container.innerHTML = '<p style="text-align:center; padding: 20px;">Ricerca offerte in corso su Jooble Italia...</p>';
+
+  // Prendiamo i valori digitati dall'utente
+  const roleInput = document.getElementById('role') ? document.getElementById('role').value : '';
+  const locationInput = document.getElementById('location') ? document.getElementById('location').value : '';
+
+  // Parametri della richiesta a Jooble
+  const apiKey = "b31657cf-399c-47b3-a0cd-266a8f502ca3";
+  const url = `https://it.jooble.org/api/${apiKey}`;
+
+  // Se l'utente non scrive nulla, cerchiamo di base "lavoro" in "Italia"
+  const payload = {
+    keywords: roleInput || 'lavoro',
+    location: locationInput || 'Italia'
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    const jobs = data.jobs || [];
+
+    if (jobs.length === 0) {
+      container.innerHTML = '<p style="text-align:center; padding: 20px;">Nessun annuncio trovato per questi criteri in Italia.</p>';
+      return;
+    }
+
+    // Generiamo le schede degli annunci in italiano
+    container.innerHTML = jobs.map(job => `
+      <article class="job" style="border: 1px solid #e0e0e0; padding: 16px; margin-bottom: 16px; border-radius: 8px; background: white;">
+        <h3 style="margin-top: 0; color: #2c3e50;">${job.title}</h3>
+        <p class="company"><strong>Azienda:</strong> ${job.company || 'Non specificata'}</p>
+        <p class="job-meta"><strong>Luogo:</strong> ${job.location || 'Italia'} | <strong>Stipendio:</strong> ${job.snippet ? job.type || 'Non specificato' : 'N/D'}</p>
+        <div style="font-size: 0.9em; color: #555; margin: 10px 0;">${job.snippet || ''}</div>
+        <a href="${job.link}" target="_blank" class="button" style="display: inline-block; background: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; margin-top: 8px;">Vedi Annuncio su Jooble</a>
+      </article>
+    `).join('');
+
+  } catch (error) {
+    console.error('Errore durante il recupero dei dati da Jooble:', error);
+    container.innerHTML = '<p style="text-align:center; color: red;">Si è verificato un errore durante il caricamento degli annunci.</p>';
+  }
+}
+
+function resetSearch() {
+  if (document.getElementById('role')) document.getElementById('role').value = '';
+  if (document.getElementById('location')) document.getElementById('location').value = '';
+  if (document.getElementById('category')) document.getElementById('category').value = '';
+  if (document.getElementById('contract')) document.getElementById('contract').value = '';
+  searchJobs();
+}
+
+// Avvia la ricerca iniziale appena la pagina è pronta
+document.addEventListener('DOMContentLoaded', () => {
+  searchJobs();
+});
+</script>
+</body>
+</html>
