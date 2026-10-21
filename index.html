@@ -3,254 +3,347 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JobFinder - Trova il tuo prossimo lavoro</title>
+  <title>💼 JobFinder - La tua carriera parte da qui</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { box-sizing: border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    * {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      color: #20243a;
+      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #f1f5f9 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
     }
 
-    header {
-      background: #ffffff;
-      padding: 20px 7%;
-      border-bottom: 1px solid #e6e8ef;
+    /* Glassmorphism Effect */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
     }
 
-    header h2 { margin: 0; color: #5146e5; }
-
-    .hero {
-      padding: 48px 7% 32px;
-      background: #eeedff;
+    /* Smooth Hover Card Animation */
+    .job-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .job-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 8px 10px -6px rgba(99, 102, 241, 0.05);
+      border-color: #c7d2fe;
     }
 
-    .hero h1 {
-      font-size: clamp(28px, 5vw, 44px);
-      margin: 0 0 12px;
+    /* Chip Active State */
+    .chip-active {
+      background-color: #4f46e5 !important;
+      color: #ffffff !important;
+      border-color: #4f46e5 !important;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 
-    .hero p { color: #555b70; }
-
-    .search {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 12px;
-      margin-top: 24px;
+    /* Custom Scrollbar for top companies horizontal list */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-
-    input, select, button {
-      width: 100%;
-      padding: 13px;
-      border-radius: 9px;
-      border: 1px solid #d9dce8;
-      background: white;
-      font-size: 15px;
-    }
-
-    button {
-      cursor: pointer;
-      background: #5146e5;
-      color: white;
-      border: none;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-
-    button:hover { background: #3f35c7; }
-
-    .reset {
-      background: #e4e5ef;
-      color: #292d42;
-    }
-
-    .reset:hover { background: #d5d7e4; }
-
-    main { padding: 28px 7%; }
-
-    .results-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    #results {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 20px;
-    }
-
-    .job {
-      background: white;
-      border: 1px solid #e5e6ee;
-      border-radius: 14px;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .job h3 { margin: 0 0 10px; font-size: 18px; color: #1e2235; }
-    .company { color: #5146e5; font-weight: bold; margin-bottom: 12px; }
-
-    .tag {
-      display: inline-block;
-      padding: 6px 9px;
-      margin: 0 5px 8px 0;
-      background: #eeedff;
-      color: #4438cc;
-      border-radius: 6px;
-      font-size: 12px;
-    }
-
-    .job p { color: #555b70; font-size: 14px; margin: 6px 0; }
-    .job-desc {
-      font-size: 13px;
-      color: #62677a;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      margin: 10px 0 16px !important;
-    }
-
-    .job a {
-      text-decoration: none;
-      display: block;
-    }
-
-    .loading {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 40px;
-      font-size: 18px;
-      color: #5146e5;
-    }
-
-    .note {
-      font-size: 12px;
-      color: #777b8b;
-      line-height: 1.5;
-      margin-top: 28px;
-    }
-
-    @media (max-width: 500px) {
-      .hero { padding-top: 32px; }
-      main { padding-top: 20px; }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body>
+<body class="text-slate-800 antialiased py-8 px-4 sm:px-6 lg:px-8">
 
-<header>
-  <h2>JobFinder</h2>
-</header>
+  <!-- HEADER -->
+  <header class="max-w-5xl mx-auto text-center mb-10">
+    <div class="inline-flex items-center gap-2 bg-indigo-100/80 text-indigo-700 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide mb-4 shadow-sm backdrop-blur-sm">
+      <span>🚀 Trova il lavoro che hai sempre desiderato</span>
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-3">
+      💼 JobFinder <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">IT</span>
+    </h1>
+    <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+      Cerca in tempo reale tra le migliori aziende in Italia e candidati in un click.
+    </p>
+  </header>
 
-<section class="hero">
-  <h1>Il lavoro giusto, senza perdere ore.</h1>
-  <p>Cerca opportunità reali da siti e agenzie in tutta Italia.</p>
+  <main class="max-w-5xl mx-auto space-y-8">
 
-  <form class="search" onsubmit="event.preventDefault(); searchJobs();">
-    <input id="role" placeholder="Ruolo: es. Sviluppatore, Marketing...">
-    <input id="city" placeholder="Città: es. Roma, Milano, Bologna...">
+    <!-- SEZIONE: AZIENDE DEI TUOI SOGNI -->
+    <section class="glass-card rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span>⭐</span> Le Aziende dei tuoi Sogni
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">Clicca su un brand per scoprire subito le loro posizioni aperte</p>
+        </div>
+      </div>
 
-    <select id="contract">
-      <option value="">Tutti i contratti</option>
-      <option value="full_time">Tempo pieno / Indeterminato</option>
-      <option value="part_time">Part Time</option>
-      <option value="contract">Determinato / Stage</option>
-    </select>
+      <div class="flex gap-2.5 overflow-x-auto pb-2 no-scrollbar" id="dream-companies-chips">
+        <button onclick="filterByCompany('Ferrari')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>🏎️</span> Ferrari
+        </button>
+        <button onclick="filterByCompany('Deloitte')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>📊</span> Deloitte
+        </button>
+        <button onclick="filterByCompany('Amazon')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>📦</span> Amazon
+        </button>
+        <button onclick="filterByCompany('Enel')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>⚡</span> Enel
+        </button>
+        <button onclick="filterByCompany('Intesa Sanpaolo')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>🏦</span> Intesa Sanpaolo
+        </button>
+        <button onclick="filterByCompany('Google')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>🌐</span> Google
+        </button>
+        <button onclick="filterByCompany('Gucci')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>✨</span> Gucci
+        </button>
+        <button onclick="filterByCompany('Barilla')" class="company-chip shrink-0 px-4 py-2 bg-white hover:bg-indigo-50 text-slate-700 border border-slate-200 rounded-xl font-medium text-sm transition flex items-center gap-2 shadow-sm">
+          <span>🍝</span> Barilla
+        </button>
+      </div>
+    </section>
 
-    <button type="submit">Cerca lavoro</button>
-    <button type="button" class="reset" onclick="resetSearch()">Azzera filtri</button>
-  </form>
-</section>
+    <!-- BARRA DI RICERCA E FILTRI -->
+    <section class="glass-card rounded-2xl p-6 shadow-md border border-white">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-5">
+        
+        <!-- Input Ruolo / Azienda -->
+        <div>
+          <label for="role" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Ruolo o Azienda</label>
+          <input type="text" id="role" placeholder="es. Sviluppatore, Marketing, Ferrari..." class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-sm">
+        </div>
 
-<main>
-  <div class="results-top">
-    <h2>Offerte di lavoro trovate</h2>
-    <span id="count">Inserisci una ricerca per iniziare</span>
-  </div>
+        <!-- Input Città -->
+        <div>
+          <label for="location" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Città o Regione</label>
+          <input type="text" id="location" placeholder="es. Roma, Milano, Bologna, Smart Working..." class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-sm">
+        </div>
 
-  <div id="results"></div>
+        <!-- Tipi di Contratto / Modalità -->
+        <div>
+          <label for="contractType" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Modalità / Contratto</label>
+          <select id="contractType" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-sm">
+            <option value="">Tutti i contratti</option>
+            <option value="Smart Working">💻 Smart Working / Remote</option>
+            <option value="Tempo Indeterminato">📄 Tempo Indeterminato</option>
+            <option value="Part-time">⏰ Part-time</option>
+            <option value="Stage">🎓 Stage / Tirocinio</option>
+          </select>
+        </div>
 
-  <p class="note">
-    JobFinder è un aggregatore di offerte di lavoro. Gli annunci mostrati provengono da API e fonti esterne ufficiali. Cliccando su "Candidati sul sito" verrai reindirizzato direttamente alla pagina originale dell'annuncio.
-  </p>
-</main>
+      </div>
 
-<script>
-  async function searchJobs() {
-  const container = document.getElementById('results');
-  if (!container) return;
+      <!-- BOTTONI AZIONE E TAG RAPIDI -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-200/60">
+        
+        <!-- Tag Rapidi della modalità -->
+        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+          <button onclick="quickFilter('Smart Working')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold transition border border-indigo-100">
+            💻 Smart Working
+          </button>
+          <button onclick="quickFilter('Stage')" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-semibold transition border border-emerald-100">
+            🎓 Stage / Neo-laureati
+          </button>
+          <button onclick="quickFilter('Full time')" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold transition border border-amber-100">
+            ⏳ Full-time
+          </button>
+        </div>
 
-  container.innerHTML = '<p style="text-align:center; padding: 20px;">Ricerca offerte in corso su Jooble Italia...</p>';
+        <!-- Bottoni Cerca / Azzera -->
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <button onclick="resetSearch()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-semibold transition">
+            Azzera filtri
+          </button>
+          <button onclick="searchJobs()" class="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-200 transition transform active:scale-95 flex items-center justify-center gap-2">
+            <span>🔍</span> Cerca lavoro
+          </button>
+        </div>
 
-  // Prendiamo i valori digitati dall'utente
-  const roleInput = document.getElementById('role') ? document.getElementById('role').value : '';
-  const locationInput = document.getElementById('location') ? document.getElementById('location').value : '';
+      </div>
+    </section>
 
-  // Parametri della richiesta a Jooble
-  const apiKey = "b31657cf-399c-47b3-a0cd-266a8f502ca3";
-  const url = `https://it.jooble.org/api/${apiKey}`;
+    <!-- RISULTATI OFFERTE -->
+    <section>
+      <div class="flex items-center justify-between mb-4 px-1">
+        <h2 class="text-xl font-bold text-slate-800">Offerte di lavoro trovate</h2>
+        <span id="results-count" class="text-xs sm:text-sm font-semibold text-slate-500 bg-white px-3 py-1 rounded-full shadow-sm">In attesa di ricerca...</span>
+      </div>
 
-  // Se l'utente non scrive nulla, cerchiamo di base "lavoro" in "Italia"
-  const payload = {
-    keywords: roleInput || 'lavoro',
-    location: locationInput || 'Italia'
-  };
+      <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- I risultati verranno inseriti dinamicamente via JS -->
+      </div>
+    </section>
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
+  </main>
 
-    const data = await response.json();
-    const jobs = data.jobs || [];
+  <!-- FOOTER -->
+  <footer class="max-w-5xl mx-auto mt-16 pt-8 border-t border-slate-300/60 text-center text-slate-500 text-sm">
+    <p>© 2026 <strong class="text-slate-800">JobFinder IT</strong> — Realizzato da <span class="font-semibold text-indigo-600">Carla Gabrielli</span></p>
+    <p class="text-xs text-slate-400 mt-1">Dati integrati in tempo reale dall'API ufficiale di <a href="https://it.jooble.org" target="_blank" class="underline hover:text-indigo-600">Jooble Italia</a></p>
+  </footer>
 
-    if (jobs.length === 0) {
-      container.innerHTML = '<p style="text-align:center; padding: 20px;">Nessun annuncio trovato per questi criteri in Italia.</p>';
-      return;
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    const API_KEY = "b31657cf-399c-47b3-a0cd-266a8f502ca3";
+    let activeCompanyFilter = "";
+
+    // Filtro per Azienda "I tuoi sogni"
+    function filterByCompany(companyName) {
+      const roleInput = document.getElementById('role');
+      const companyChips = document.querySelectorAll('.company-chip');
+
+      companyChips.forEach(chip => chip.classList.remove('chip-active'));
+
+      if (activeCompanyFilter === companyName) {
+        // Se si ripreme sullo stesso chip, si deseleziona
+        activeCompanyFilter = "";
+        roleInput.value = "";
+      } else {
+        activeCompanyFilter = companyName;
+        roleInput.value = companyName;
+        
+        // Evidenzia il chip selezionato
+        event.currentTarget.classList.add('chip-active');
+      }
+
+      searchJobs();
     }
 
-    // Generiamo le schede degli annunci in italiano
-    container.innerHTML = jobs.map(job => `
-      <article class="job" style="border: 1px solid #e0e0e0; padding: 16px; margin-bottom: 16px; border-radius: 8px; background: white;">
-        <h3 style="margin-top: 0; color: #2c3e50;">${job.title}</h3>
-        <p class="company"><strong>Azienda:</strong> ${job.company || 'Non specificata'}</p>
-        <p class="job-meta"><strong>Luogo:</strong> ${job.location || 'Italia'} | <strong>Stipendio:</strong> ${job.snippet ? job.type || 'Non specificato' : 'N/D'}</p>
-        <div style="font-size: 0.9em; color: #555; margin: 10px 0;">${job.snippet || ''}</div>
-        <a href="${job.link}" target="_blank" class="button" style="display: inline-block; background: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; margin-top: 8px;">Vedi Annuncio su Jooble</a>
-      </article>
-    `).join('');
+    // Filtri rapidi per modalità
+    function quickFilter(mode) {
+      const locationInput = document.getElementById('location');
+      const contractSelect = document.getElementById('contractType');
 
-  } catch (error) {
-    console.error('Errore durante il recupero dei dati da Jooble:', error);
-    container.innerHTML = '<p style="text-align:center; color: red;">Si è verificato un errore durante il caricamento degli annunci.</p>';
-  }
-}
+      if (mode === 'Smart Working') {
+        locationInput.value = 'Smart Working';
+      } else if (mode === 'Stage') {
+        contractSelect.value = 'Stage';
+      } else if (mode === 'Full time') {
+        contractSelect.value = 'Tempo Indeterminato';
+      }
 
-function resetSearch() {
-  if (document.getElementById('role')) document.getElementById('role').value = '';
-  if (document.getElementById('location')) document.getElementById('location').value = '';
-  if (document.getElementById('category')) document.getElementById('category').value = '';
-  if (document.getElementById('contract')) document.getElementById('contract').value = '';
-  searchJobs();
-}
+      searchJobs();
+    }
 
-// Avvia la ricerca iniziale appena la pagina è pronta
-document.addEventListener('DOMContentLoaded', () => {
-  searchJobs();
-});
-</script>
+    // Funzione principale di ricerca Jobble
+    async function searchJobs() {
+      const container = document.getElementById('results');
+      const countLabel = document.getElementById('results-count');
+
+      // Stato di Caricamento dinamico
+      container.innerHTML = `
+        <div class="col-span-full text-center py-16 bg-white/60 rounded-2xl backdrop-blur-sm border border-slate-200/50 shadow-sm">
+          <div class="inline-block animate-spin text-4xl mb-3">🔄</div>
+          <p class="text-base font-bold text-slate-700">Ricerca in corso su Jooble Italia...</p>
+          <p class="text-xs text-slate-400 mt-1">Selezioniamo le migliori opportunità per te.</p>
+        </div>
+      `;
+      countLabel.textContent = "Ricerca in corso...";
+
+      const role = document.getElementById('role').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const contract = document.getElementById('contractType').value;
+
+      // Costruzione Query per Jooble
+      let queryKeywords = role || 'Lavoro';
+      if (contract && !queryKeywords.toLowerCase().includes(contract.toLowerCase())) {
+        queryKeywords += ` ${contract}`;
+      }
+
+      const url = `https://it.jooble.org/api/${API_KEY}`;
+      const payload = {
+        keywords: queryKeywords,
+        location: location || 'Italia'
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error('Errore nella chiamata API');
+
+        const data = await response.json();
+        const jobs = data.jobs || [];
+
+        if (jobs.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full text-center py-12 bg-white/80 rounded-2xl border border-slate-200 shadow-sm">
+              <span class="text-3xl block mb-2">🔎</span>
+              <p class="text-base font-semibold text-slate-700">Nessun annuncio trovato per questi criteri.</p>
+              <p class="text-xs text-slate-400 mt-1">Prova ad azzerare i filtri o cercare una città/ruolo diverso.</p>
+            </div>
+          `;
+          countLabel.textContent = "0 Annunci trovati";
+          return;
+        }
+
+        countLabel.textContent = `${jobs.length} Annunci trovati`;
+
+        // Render delle Card Annunci
+        container.innerHTML = jobs.map(job => `
+          <article class="job-card bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <h3 class="font-bold text-base text-slate-900 leading-snug">${job.title}</h3>
+                <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 border border-indigo-100">IT</span>
+              </div>
+              <p class="font-semibold text-sm text-indigo-600 mb-1 flex items-center gap-1">
+                <span>🏢</span> ${job.company || 'Azienda Riservata'}
+              </p>
+              <p class="text-xs font-medium text-slate-500 mb-3 flex items-center gap-1">
+                <span>📍</span> ${job.location || 'Italia'}
+              </p>
+              <div class="text-xs text-slate-600 line-clamp-3 mb-5 leading-relaxed bg-slate-50/80 p-2.5 rounded-lg border border-slate-100">
+                ${job.snippet || 'Clicca sul bottone per leggere la descrizione completa dell\'offerta.'}
+              </div>
+            </div>
+
+            <a href="${job.link}" target="_blank" rel="noopener noreferrer" class="w-full text-center bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-100 hover:border-indigo-600 font-semibold py-2.5 rounded-xl text-xs transition-all duration-200 block shadow-xs">
+              Candidati su Jooble ➔
+            </a>
+          </article>
+        `).join('');
+
+      } catch (error) {
+        console.error('Errore Jooble:', error);
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-red-50 text-red-600 rounded-2xl border border-red-100">
+            <p class="font-bold text-sm">Impossibile caricare gli annunci al momento.</p>
+            <p class="text-xs mt-1">Verifica la connessione internet e riprova.</p>
+          </div>
+        `;
+        countLabel.textContent = "Errore caricamento";
+      }
+    }
+
+    // Reset Ricerca
+    function resetSearch() {
+      document.getElementById('role').value = '';
+      document.getElementById('location').value = '';
+      document.getElementById('contractType').value = '';
+      activeCompanyFilter = "";
+      
+      const companyChips = document.querySelectorAll('.company-chip');
+      companyChips.forEach(chip => chip.classList.remove('chip-active'));
+
+      searchJobs();
+    }
+
+    // Avvio automatico prima ricerca
+    document.addEventListener('DOMContentLoaded', () => {
+      searchJobs();
+    });
+  </script>
+
 </body>
 </html>
